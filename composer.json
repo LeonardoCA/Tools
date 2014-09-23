@@ -1,5 +1,5 @@
 {
-	"name": "LeonardoCA/Tools",
+	"name": "leonardoca/tools",
 	"description": "LeonardoCA tools for nette debugging",
 	"keywords": ["nette", "leonardoca", "tools", "debugging"],
 	"homepage": "https://github.com/LeonardoCA/Tools",
@@ -11,7 +11,7 @@
 		}
 	],
 	"support": {
-		"email": "info@venne.cz",
+		"email": "leonard.odlozilik@gmail.com",
 		"issues": "https://github.com/LeonadoCA/Tools/issues"
 	},
 	"require": {
