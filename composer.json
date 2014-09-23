@@ -1,0 +1,34 @@
+{
+	"name": "LeonardoCA/Tools",
+	"description": "LeonardoCA tools for nette debugging",
+	"keywords": ["nette", "leonardoca", "tools", "debugging"],
+	"homepage": "https://github.com/LeonardoCA/Tools",
+	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"authors": [
+		{
+			"name": "Leonard Odlozilik",
+			"homepage": "https://github.com/LeonardoCA"
+		}
+	],
+	"support": {
+		"email": "info@venne.cz",
+		"issues": "https://github.com/LeonadoCA/Tools/issues"
+	},
+	"require": {
+		"php": ">=5.4.0",
+		"nette/nette": "~2.1"
+	},
+	"require-dev": {
+		"nette/tester": "~1.2.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"LeonardoCA\\Tools\\": "src/Tools/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"LeonardoCATests\\": "tests/src/"
+		}
+	}
+}
