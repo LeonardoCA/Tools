@@ -184,7 +184,7 @@ class ProcessMonitor
 			$log .= ' <a href="#" rel="next">' . $description
 				. ' <abbr>►</abbr></a> '
 				. "<div class='hid' style='display:none'>";
-			if ($data instanceof \DibiFluent) {
+			if (class_exists('\DibiFluent') && ($data instanceof \DibiFluent)) {
 				ob_start();
 				$data->test();
 				$log .= ob_get_clean();
@@ -284,12 +284,12 @@ class ProcessMonitor
 	 * @param bool $unit
 	 * @return string $unit {@see self::$bytesUnit}
 	 */
-	public static function formatBytes($size, $unit = false)
+	public static function formatSize($size, $unit = false)
 	{
 		$formatTo = $unit ? $unit : self::$bytesUnit;
 		if ($formatTo == self::SIZE_AUTO) {
-			$formatTo = $size > self::SIZE_MB ? self::SIZE_MB
-				: ($size > self::SIZE_KB ? self::SIZE_KB : self::SIZE_B);
+			$formatTo = $size >= self::SIZE_MB ? self::SIZE_MB
+				: ($size >= self::SIZE_KB ? self::SIZE_KB : self::SIZE_B);
 		}
 		return number_format(
 			$size / $formatTo,
@@ -315,7 +315,7 @@ class ProcessMonitor
 			self::$lastIntervalTime = $time;
 		}
 		return
-			self::formatTime($time) . self::formatBytes(memory_get_usage(true))
+			self::formatTime($time) . self::formatSize(memory_get_usage(true))
 			. ' => ';
 	}
 }

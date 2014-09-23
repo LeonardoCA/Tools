@@ -22,7 +22,22 @@ class ProcessMonitorTest extends \Tester\TestCase
 
 	public function testFormatSize()
 	{
-		Assert::same('1,00MB', ProcessMonitor::formatBytes(1024*1024, ProcessMonitor::SIZE_MB));
+		Assert::same(
+			'1,00MB',
+			ProcessMonitor::formatSize(1024 * 1024, ProcessMonitor::SIZE_MB)
+		);
+		Assert::same(
+			'1,00MB',
+			ProcessMonitor::formatSize(1024 * 1024, ProcessMonitor::SIZE_AUTO)
+		);
+		Assert::same(
+			'1.048.576B',
+			ProcessMonitor::formatSize(1024 * 1024, ProcessMonitor::SIZE_B)
+		);
+		Assert::same(
+			'1.024,00KB',
+			ProcessMonitor::formatSize(1024 * 1024, ProcessMonitor::SIZE_KB)
+		);
 	}
 
 
