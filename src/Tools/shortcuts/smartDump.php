@@ -58,7 +58,7 @@ function bs()
 function be($title = 'be')
 {
 	$out = ob_get_clean();
-	SmartDump::addToDumpPanel(array($title => $out));
+	SmartDump::addToDumpPanel($out, $title);
 }
 
 /**
@@ -87,7 +87,7 @@ function dumpHtml(
 	$output .= '<pre class="prettyprint linenums pre-scrollable">'
 		. htmlspecialchars(tidyFormatString($renderedElement)) . '</pre>';
 	if ($includePrettyPrint) {
-		$output .= '';
+		$output .= '<script>prettyPrint();</script>';
 	}
 	if (($maxDepth > 0) && ($htmlElement instanceof \Latte\Runtime\Html)) {
 		Debugger::dump($renderedElement);
@@ -112,18 +112,21 @@ function dumpHtml(
  */
 function tidyFormatString($string, $tidy_config = '')
 {
+	if (!extension_loaded('tidy')) {
+		return $string;
+	}
 	$config = array(
 		'show-body-only' => true,
 		'clean' => false,
 		'char-encoding' => 'utf8',
-		'add-xml-decl' => true,
-		'add-xml-space' => true,
+		'add-xml-decl' => false,
+		'add-xml-space' => false,
 		'output-html' => false,
 		'output-xml' => false,
 		'output-xhtml' => true,
 		'numeric-entities' => false,
 		'ascii-chars' => false,
-		'doctype' => 'strict',
+		'doctype' => 'omit',
 		'bare' => true,
 		'fix-uri' => false,
 		'indent' => true,
@@ -172,6 +175,66 @@ function tidyFormatString($string, $tidy_config = '')
 	unset($tidy);
 	unset($tidy_config);
 	return $out;
+}
+
+function tidyFormatXML($string, $tidy_config = '')
+{
+	$config = array(
+		'show-body-only' => true,
+		'clean' => false,
+		'char-encoding' => 'utf8',
+		'add-xml-decl' => false,
+		'add-xml-space' => false,
+		'output-html' => false,
+		'output-xml' => false,
+		'output-xhtml' => true,
+		'numeric-entities' => false,
+		'ascii-chars' => false,
+		'doctype' => 'omit',
+		'bare' => true,
+		'fix-uri' => false,
+		'indent' => true,
+		'indent-spaces' => 4,
+		'tab-size' => 4,
+		'wrap-attributes' => false,
+		'wrap' => 0,
+		'indent-attributes' => false,
+		'join-classes' => false,
+		'join-styles' => false,
+		'enclose-block-text' => false,
+		'fix-bad-comments' => false,
+		'fix-backslash' => false,
+		'replace-color' => false,
+		'wrap-asp' => false,
+		'wrap-jste' => false,
+		'wrap-php' => false,
+		'write-back' => false,
+		'drop-proprietary-attributes' => false,
+		'hide-comments' => false,
+		'hide-endtags' => false,
+		'literal-attributes' => false,
+		'drop-empty-paras' => false,
+		'enclose-text' => false,
+		'quote-ampersand' => false,
+		'quote-marks' => false,
+		'quote-nbsp' => false,
+		'vertical-space' => false,
+		'wrap-script-literals' => false,
+		'tidy-mark' => false,
+		'merge-divs' => false,
+		'repeated-attributes' => 'keep-last',
+		'break-before-br' => false,
+		'preserve-entities' => true,
+		'force-output' => true,
+		'quiet' => true,
+		'output-bom' => false,
+		'new-empty-tags' => 'li',
+		'input-xml' => true
+	);
+	if ($tidy_config == '') {
+		$tidy_config = &$config;
+	}
+	return tidyFormatString($string, $tidy_config);
 }
 
 function shadowDomTemplate($title, $content, $moreStyles = '')
