@@ -21,6 +21,10 @@
 	"require-dev": {
 		"nette/tester": "~1.2.0"
 	},
+	"minimum-stability": "dev",
+	"suggest": {
+        "ext-tidy": "LeonardoCA\\Tools suggests to install ext-tidy"
+    },
 	"autoload": {
 		"psr-4": {
 			"LeonardoCA\\Tools\\": "src/Tools/"
