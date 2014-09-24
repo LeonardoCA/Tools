@@ -24,13 +24,11 @@ class DumpMailer extends Nette\Object implements IMailer
 	{
 		SmartDump::sdump($mail->headers, 'Email');
 		SmartDump::addToDumpPanel(
-			[
-				'Email' => shadowDomTemplate(
-					'Email',
-					dumpHtml((string)$mail->htmlBody, true, 0, true),
-					prettyPrintStyle()
-				)
-			]
+			shadowDomTemplate(
+				'Email',
+				dumpHtml((string)$mail->htmlBody, true, 0, true),
+				prettyPrintStyle()
+			)
 		);
 	}
 
