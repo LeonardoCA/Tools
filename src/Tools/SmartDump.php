@@ -156,7 +156,8 @@ class SmartDump
 			self::initialize();
 			if (empty(self::$dumpPanel->data)) {
 				self::addToDumpPanel(
-					array('SmartDump starts' => 'preparing Dumps Panel for AJAX')
+					'preparing Dumps Panel for AJAX',
+					'SmartDump starts'
 				);
 			}
 		}
