@@ -1,4 +1,4 @@
-# LeonardoCA:Tools [![Build Status](https://secure.travis-ci.org/LeonardoCA/Tools.png)](https://travis-ci.org/LeonardoCA/Tools.svg)
+# LeonardoCA/Tools [![Build Status](https://secure.travis-ci.org/LeonardoCA/Tools.png)](https://travis-ci.org/LeonardoCA/Tools.svg)
 
 Various tools for debugging nette applications:
 
