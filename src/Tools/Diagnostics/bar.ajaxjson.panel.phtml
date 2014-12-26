@@ -1,0 +1,200 @@
+<?php
+/**
+ * This file is part of the LeonardoCA\Tools Nette Ad-don
+ * Copyright (c) 2012 Leonard Odlozilik
+ * For the full copyright and license information, please view
+ * the file license.txt that was distributed with this source code.
+ */
+namespace Nette\Diagnostics;
+use Nette;
+
+?>
+<style>
+	#tracy-debug-panel-LeonardoCA-Tools-Diagnostics-AjaxJsonPanel {
+		max-width: 450px;
+	}
+
+	#nette-debug .nette-AjaxJsonPanel h2 {
+		font: 11pt/1.5 sans-serif;
+		margin: 0;
+		padding: 2px 8px;
+		background: #3484d2;
+		color: white;
+	}
+
+	#nette-debug .nette-AjaxJsonPanel table {
+		width: 100%;
+	}
+
+	#nette-debug .nette-AjaxJsonPanel a {
+		color: #333;
+		background: transparent;
+		display: block;
+	}
+
+	#nette-debug .nette-AjaxJsonPanel a abbr {
+		font-family: sans-serif;
+		color: #999;
+	}
+
+	#nette-debug .nette-AjaxJsonPanel pre .php-array, #nette-debug .nette-TemplateParamsPanel pre .php-object {
+		color: #c16549;
+	}
+</style>
+<h1 id="nette-ajax-json-paneltitle">Ajax</h1>
+<div id="nette-ajax-js-monitor">
+	<ul>
+		<li></li>
+	</ul>
+</div>
+<div class="nette-inner nette-AjaxJsonPanel" id="nette-ajax-json-panel">
+	<h2>No Ajax requests fired yet.</h2>
+	<div class="tracy-dump">Panel will initialize on first request.</div>
+</div>
+<script type="text/javascript">
+	/* <![CDATA[ */
+	if (typeof jQuery != 'undefined') { //prevent js error if displaying page error before jQuery loaded
+		(function ($, undefined) {
+			/**
+			 * Shows info on Ajax request
+			 */
+			if (typeof $.nette != 'object') {
+				return;
+			}
+			$.nette.ext('diagnostics.jsonpanel') || // prevent js error on redirect (when panel code is sent twice ...)
+			$.nette.ext('diagnostics.jsonpanel', {
+				start: function (xhr, settings) {
+					var $panel = this.getPanel();
+					if (!$panel) return;
+					if (this.singleReport) this.clear();
+					$(this.getTitle(++this.counter, 'request')).appendTo($panel);
+					$("<p><b>Type</b> : " + settings.type + "</p>").appendTo($panel);
+					$("<p><b>Url</b> : <a href='" + settings.url + "' target='_blank'>" + settings.url + "</a></p>").appendTo($panel);
+				},
+				success: function (payload) {
+					var $panel = this.getPanel();
+					if (!$panel || !payload || payload.length == 0) return;
+					$(this.getTitle(this.counter, 'response')).appendTo($panel);
+					$.each(this.getMonitored(), function (i, key) {
+						var $helper = $('<div class="nette-ContainerPanel-parameters">');
+						if (key in payload) {
+							var count = 0;
+							$.each(payload[key], function (name, value) {
+								var output;
+								var code = null;
+								output = '<i style="color: #060">' + (typeof value) + '</i> ';
+								if (value === null) {
+									output += '<i style="color: #900">null</i>';
+								} else if (value === "") {
+									output += '<i style="color: #ccc">empty string</i>';
+								} else if (typeof value === 'boolean') {
+									output += '<i style="color: #900">' + (value ? 'true' : 'false') + '</i>';
+								} else if (typeof value === 'undefined') {
+									output += '<i style="color: #ccc">undefined</i>';
+								} else if (typeof value === 'number') {
+									output += '<i style="color: #009">' + value + '</i>';
+								} else {
+									code = value;
+								}
+								if (code) {
+									$('<a href="#" rel="next" class="tracy-toggle tracy-collapsed"><span class="php-key">' + name + '</span></a>').appendTo($helper);
+									var pre = $('<pre class="tracy-dump tracy-collapsed">').text(code);
+									pre.appendTo($helper);
+								} else {
+									$('<p><b style="color: #009; font-weight: bold">' + name + "</b> : " + output + "</p>").appendTo($helper);
+								}
+								count++;
+							});
+							count = "(" + count + ")";
+						} else {
+							count = "(<i>not present</i>)";
+						}
+						$("<h3 style='font-weight:bold;'>" + key + " " + count + "</h3>").appendTo($panel);
+						$helper.appendTo($panel);
+					});
+				},
+				error: function (payload) {
+					var $panel = this.getPanel();
+					if (!$panel || !payload || (payload.status == 0)) return; // data-confirm cancel
+					//console.log(payload);
+					if (payload.status != 200) {
+						$('<h2 style="font:11pt/1.5 sans-serif;margin:0;padding:2px 8px;background:#CD1818;color:white">' + payload.status + ' ' + payload.statusText + '</h3>').appendTo($panel);
+						$('<pre>').text(payload.responseText).appendTo($panel);
+					}
+				}
+			}, {
+				counter: 0,
+				singleReport: true,
+				initialize: function () {
+					if (!($("#tracy-debug").length > 0)) return false;
+					$('#nette-ajax-json-paneltitle').html('Ajax<span class="pull-right" style="font-size: 14px;margin-right: 20px;">'
+						+ 'Single:<a href="#" id="nette-debug-panel-nette-ajax-json-mode" onclick="$.nette.ext(\'diagnostics.jsonpanel\').toggleMode();return false;">' + (this.singleReport ? 'on' : 'off') + '</a>'
+						+ ' | <a href="#" id="nette-debug-panel-nette-ajax-clear"  onclick="$.nette.ext(\'diagnostics.jsonpanel\').clear();">Clear</a>'
+						+ '</span>');
+					return $("#nette-ajax-json-panel");
+				},
+				clear: function () {
+					this.panel.html('');
+				},
+				toggleMode: function () {
+					this.singleReport = !this.singleReport;
+					$("#nette-debug-panel-nette-ajax-json-mode").text(this.singleReport ? 'on' : 'off');
+				},
+				getMonitored: function () {
+					return ['state', 'snippets', 'bsmodals'];
+				},
+				getTitle: function (count, type) {
+					return '<h2 style="font:11pt/1.5 sans-serif;margin:0;padding:2px 8px;background:#3484d2;color:white">Ajax ' + type + ' #' + count + '</h2>';
+				},
+				getPanel: function () {
+					if (!this.panel) this.panel = this.initialize();
+					return this.panel;
+				}
+			});
+		})(jQuery);
+
+		(function ($) {
+			/**
+			 * Updates dibi panel on Ajax request
+			 */
+			if (typeof $.nette != 'object') {
+				return;
+			}
+			$.nette.ext('diagnostics.dibipanel') ||
+			$.nette.ext('diagnostics.dibipanel', {
+				success: function (payload) {
+					if (!payload.dibiPanel || payload.dibiPanel.length == 0) return;
+					var $panel = this.getPanel(), $helper = $('<div>');
+					$(this.getTitle(++this.counter)).appendTo($panel);
+					$('<div>', {
+						html: payload.dibiPanel
+					}).appendTo($helper);
+					$helper.children().appendTo($panel);
+					this.notify();
+				}
+			}, {
+				counter: 0,
+				getTitle: function (count) {
+					return '<h2>Ajax request #' + count + '</h2>';
+				},
+				getTab: function () {
+					if (!this.tab) this.tab = $('[rel=DibiNettePanel]');
+					return this.tab;
+				},
+				getPanel: function () {
+					if (!this.panel) this.panel = $('#tracy-debug-panel-DibiNettePanel .nette-DibiProfiler');
+					return this.panel;
+				},
+				notify: function () {
+					if (this.notified) return;
+					$('<strong>', {
+							text: ' [ajax!]',
+							css: { fontWeight: 'bold' } }
+					).appendTo(this.getTab());
+					this.notified = true;
+				}
+			});
+		})(jQuery);
+	}
+	/* ]]> */
+</script>
