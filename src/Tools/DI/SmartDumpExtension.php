@@ -25,7 +25,7 @@ class SmartDumpExtension extends CompilerExtension
 	public $defaults = array(
 		'traceMode' => 1,
 		'showParams' => false,
-		'shortcut' => 'sdump' // @todo add possibility to change shortcut name
+		'shortcut' => 'sdump'
 	);
 
 
@@ -75,7 +75,10 @@ class SmartDumpExtension extends CompilerExtension
 	 */
 	public static function register(Configurator $config)
 	{
-		/** @noinspection PhpUnusedParameterInspection */
+		/** @noinspection PhpUnusedParameterInspection
+		 * @param Configurator $configurator
+		 * @param Compiler $compiler
+		 */
 		$config->onCompile[] =
 			function (Configurator $configurator, Compiler $compiler) {
 				$compiler->addExtension('smartDump', new SmartDumpExtension());
