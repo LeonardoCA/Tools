@@ -127,6 +127,13 @@ class SmartDump
 	private static function getDumpPanel()
 	{
 		self::$dumpPanel = Debugger::getBar()->getPanel('Tracy\Debugger:dumps');
+                if (!self::$dumpPanel) {
+                        self::$dumpPanel = Debugger::getBar()->getPanel('Tracy\DefaultBarPanel');
+                }
+                if (!self::$dumpPanel) {
+                        Debugger::barDump("initialize smartDump", NULL, [Dumper::LOCATION => false]);
+                        self::$dumpPanel = Debugger::getBar()->getPanel('Tracy\DefaultBarPanel');
+                }
 	}
 
 
